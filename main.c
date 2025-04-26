@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "Ordenar.h"
 
 
 
@@ -85,24 +86,55 @@ int main(void){
     time_t clock;
     char *fname = "arquivo.txt";
 
-    //Variaveis de "Serviço"
+    //Variaveis Utilitarias
     char *sensorTypes[5] = {"TEMP", "PRES", "VIBR", "UMID", "FLUX"};
+    int opt;
 
     srand(time(NULL));
 
-    fp = fopen(fname, "w");
+    fp = fopen(fname, "r+");
         if(fp==NULL){
-            perror("error ao abrir o arquivo");
+            printf("Criando arquivo\n");
+            fp = fopen(fname, "w");
+            if(fp==NULL){
+            printf("Nao foi possivel abrir o arquivo");
             return -1;
+            }
         }
-    fputs("Timestamp Sensor Valor\r\n",fp);
-    clock=capturar_timestamp_valido();
-    timenow=localtime(&clock);
-    for (int i = 0; i < 1000; i++) {
-    time_t randTimestamp = gerar_timestamp_aleatorio(timenow->tm_mday, timenow->tm_mon + 1, timenow->tm_year + 1900);
-    fprintf(fp, "%ld %s %d\n", randTimestamp, gerar_nome(), gerar_num());
-}
+        fclose(fp);
 
-fclose(fp);
+        do {
+            printf("Escolha uma opção:\n");
+            printf("1. Gerar novo arquivo arquivo\n");
+            printf("2. Ordernar arquivos\n");
+            printf("3. Sair\n");
+            printf("Opção: ");
+            scanf("%d", &opt);
+
+            switch (opt) {
+                case 1:
+                    fp = fopen(fname, "w");
+                    fputs("Timestamp Sensor Valor\r\n",fp);
+                    clock=capturar_timestamp_valido();
+                    timenow=localtime(&clock);
+                    for (int i = 0; i < 1000; i++) {
+                        time_t randTimestamp = gerar_timestamp_aleatorio(timenow->tm_mday, timenow->tm_mon + 1, timenow->tm_year + 1900);
+                        fprintf(fp, "%ld %s %d\n", randTimestamp, gerar_nome(), gerar_num());
+                    }
+                    fclose(fp);
+                    break;
+                case 2:
+                    fp = fopen(fname, "r+");
+                    ordernar(fp, fname);
+                    fclose(fp);
+                    break;
+                case 3:
+                    break;
+                default:
+                    printf("Opção inválida. Tente novamente.\n");
+            }
+        } while (opt != 3);
+
+
 return 0;
 }
