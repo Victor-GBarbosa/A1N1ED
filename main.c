@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "Ordenar.h"
+#include "libs/ordenar.h"
 
 
 
@@ -42,7 +42,7 @@ return nomes[idx];
 
 int gerar_num(){
     int num;
-    num=rand()%100;
+    num=rand()%1000;
     return num;
 } 
 
@@ -124,17 +124,14 @@ int main(void){
                     fclose(fp);
                     break;
                 case 2:
-                    fp = fopen(fname, "r+");
-                    ordernar(fp, fname);
-                    fclose(fp);
+                    ordernar(fname);
                     break;
-                case 3:
+                case 4:
+                    
                     break;
                 default:
                     printf("Opção inválida. Tente novamente.\n");
             }
         } while (opt != 3);
-
-
 return 0;
 }
