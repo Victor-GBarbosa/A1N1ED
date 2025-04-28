@@ -68,13 +68,44 @@ void ordernar(char *fileName) { //Funçaão de ordenar os registros
    fclose(fp);
 }
 
-void separarPorSensores(FILE* fp, char* fileName, char types[]) {
-    fp = fopen(fileName, "r+");
-     if (fp == NULL) {
-        printf("Erro ao abrir o arquivo");
-        return;
-     } else {
+void separarPorSensores(char* fileName) {
+   FILE *fp, *tfp;
+   Registro registros[contarLinhas(fileName)];
 
-     }
+   char linha[256], buffer[50];
+   int i = 0;
+
+   fp = fopen(fileName, "r"); //pegando as informações do arquivo principal
+      if (fp == NULL) {
+         printf("Erro ao abrir o arquivo");
+         return;
+      } else {
+         fgets(linha, sizeof(linha), fp);
+         while (fgets(linha, sizeof(linha), fp) != NULL) {
+         if (strlen(linha) > 1) {
+            sscanf(linha, "%d %49s %d", &registros[i].timestamp, registros[i].sensor, &registros[i].valor);
+            i++;
+         }
+         }
+         fclose(fp);
+      }
+
+      for(i = 0; i < sizeof(registros) / sizeof(Registro); i++) {
+      snprintf(buffer, sizeof(buffer), "%s.txt", registros[i].sensor);
+      tfp = fopen(buffer, "a");
+         printf("abertura de arquivo testada");
+         if (tfp == NULL) {
+            printf("tentativa de de crair o arquivo");
+            tfp = fopen(buffer, "w");
+            if (tfp == NULL) {
+               perror("Erro ao abrir arquivo");
+               return;
+               }
+        }
+        printf("");
+        fprintf(tfp, "%i %s %i\n", registros[i].timestamp, registros[i].sensor, registros[i].valor);
+        fclose(tfp);
+      }
+   fclose(fp);
 }
 

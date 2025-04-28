@@ -117,14 +117,19 @@ int main(void){
                     fputs("Timestamp Sensor Valor\r\n",fp);
                     clock=capturar_timestamp_valido();
                     timenow=localtime(&clock);
-                    for (int i = 0; i < 1000; i++) {
-                        time_t randTimestamp = gerar_timestamp_aleatorio(timenow->tm_mday, timenow->tm_mon + 1, timenow->tm_year + 1900);
-                        fprintf(fp, "%ld %s %d\n", randTimestamp, gerar_nome(), gerar_num());
+                    for (int j = 0; j < sizeof(sensorTypes); j++) {
+                        for (int i = 0; i < 1000; i++) {
+                            time_t randTimestamp = gerar_timestamp_aleatorio(timenow->tm_mday, timenow->tm_mon + 1, timenow->tm_year + 1900);
+                            fprintf(fp, "%ld %s %d\n", randTimestamp, sensorTypes[j], gerar_num());
+                        }
                     }
                     fclose(fp);
                     break;
                 case 2:
                     ordernar(fname);
+                    break;
+                case 3:
+                    separarPorSensores(fname);
                     break;
                 case 4:
                     
@@ -132,6 +137,6 @@ int main(void){
                 default:
                     printf("Opção inválida. Tente novamente.\n");
             }
-        } while (opt != 3);
+        } while (opt != 4);
 return 0;
 }
