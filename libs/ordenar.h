@@ -34,7 +34,12 @@ void ordernar(char *fileName) { //Funçaão de ordenar os registros
    char linha[256];
    fgets(linha, sizeof(linha), fp); //pula 2 linhas
    fgets(linha, sizeof(linha), fp);
-
+    while (fgets(linha, sizeof(linha), fp) != NULL) { //inicia um looping para ler as linhas
+        if (strlen(linha) > 1) { //verifica se a linha tem conteudo
+            sscanf(linha, "%d %49s %d", &registros[i].timestamp, registros[i].sensor, &registros[i].valor); //divide a linha no formato do struct registro
+            i++;
+        }
+    }
 
     int contador, j = 0, k = 0;
     Registro tempReg;
@@ -106,5 +111,5 @@ void separarPorSensores(char* fileName) {
 }
 
 Registro construirRegistro(fileName) {
-   
+
 }
