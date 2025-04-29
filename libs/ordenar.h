@@ -8,7 +8,7 @@ typedef struct {
    int valor;
 } Registro;
 
-int contarLinhas(char* fileName) {
+int contarLinhas(char* fileName, int ignore) {
    FILE *fp = fopen(fileName, "r");
    int contador = 0;
    char linha[256]; 
@@ -16,12 +16,12 @@ int contarLinhas(char* fileName) {
        contador++; 
    }
    fclose(fp);
-   return contador - 2;
+   return contador - ignore;
 }
 
 void ordernar(char *fileName) { //Funçaão de ordenar os registros
 
-   Registro registros[contarLinhas(fileName)];
+   Registro registros[contarLinhas(fileName, 1)]; //criando um vetor de registros do tamanho tamanho do arquivo ignorndo o cabeçalho
 
    FILE *fp = fopen(fileName, "r+"); //Abrindo arquivo
    if (fp == NULL) {
@@ -29,16 +29,12 @@ void ordernar(char *fileName) { //Funçaão de ordenar os registros
       return;
    }
    
-   fseek(fp, 0, SEEK_SET);
-    int i = 0;
-    char linha[256];
-    fgets(linha, sizeof(linha), fp);
-    while (fgets(linha, sizeof(linha), fp) != NULL) {
-        if (strlen(linha) > 1) {
-            sscanf(linha, "%d %49s %d", &registros[i].timestamp, registros[i].sensor, &registros[i].valor);
-            i++;
-        }
-    }
+   fseek(fp, 0, SEEK_SET); //Colocando o ponteiro na posição inicial do arquivo
+   int i = 0;
+   char linha[256];
+   fgets(linha, sizeof(linha), fp); //pula 2 linhas
+   fgets(linha, sizeof(linha), fp);
+
 
     int contador, j = 0, k = 0;
     Registro tempReg;
@@ -70,7 +66,7 @@ void ordernar(char *fileName) { //Funçaão de ordenar os registros
 
 void separarPorSensores(char* fileName) {
    FILE *fp, *tfp;
-   Registro registros[contarLinhas(fileName)];
+   Registro registros[contarLinhas(fileName, 2)];
 
    char linha[256], buffer[50];
    int i = 0;
@@ -109,3 +105,6 @@ void separarPorSensores(char* fileName) {
    fclose(fp);
 }
 
+Registro construirRegistro(fileName) {
+   
+}
