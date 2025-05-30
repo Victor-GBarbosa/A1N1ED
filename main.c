@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
 #include "libs/ordenar.h"
+#include "libs/buscaBinaria.h"
 
 
 
@@ -80,35 +82,26 @@ time_t gerar_timestamp_aleatorio(int dia, int mes, int ano) {
 }
 
 int main(void){
-    //Variaveis de arquivo
+    //variaveis de arquivo
     FILE *fp;
     struct tm *timenow;
     time_t clock;
-    char *fname = "arquivo.txt";
+    char *fname = "Registros.txt";
 
-    //Variaveis Utilitarias
+    //variaveis utilitarias
     char *sensorTypes[5] = {"TEMP", "PRES", "VIBR", "UMID", "FLUX"};
-    int opt;
-
-    srand(time(NULL));
-
-    fp = fopen(fname, "r+");
-        if(fp==NULL){
-            printf("Criando arquivo\n");
-            fp = fopen(fname, "w");
-            if(fp==NULL){
-            printf("Nao foi possivel abrir o arquivo");
-            return -1;
-            }
-        }
-        fclose(fp);
+    int opt, sensorOpt = 0;;
+    int i,j;
+    srand(time(NULL) + i + j);
+    setlocale(LC_ALL, "pt-BR");
 
         do {
-            printf("Escolha uma opção:\n");
+            printf("Escolha uma opcao:\n");
             printf("1. Gerar novo arquivo arquivo\n");
             printf("2. Ordernar arquivos\n");
-            printf("3. Sair\n");
-            printf("Opção: ");
+            printf("3. Separar\n");
+            printf("4. Buscar sensor por tempo\n");
+            printf("Opcao: ");
             scanf("%d", &opt);
 
             switch (opt) {
@@ -117,26 +110,48 @@ int main(void){
                     fputs("Timestamp Sensor Valor\r\n",fp);
                     clock=capturar_timestamp_valido();
                     timenow=localtime(&clock);
-                    for (int j = 0; j < sizeof(sensorTypes); j++) {
-                        for (int i = 0; i < 1000; i++) {
+                    for ( j = 0; j < (sizeof(sensorTypes) / sizeof(sensorTypes[0])); j++) {
+                        for (i = 0; i < 1200; i++) {
                             time_t randTimestamp = gerar_timestamp_aleatorio(timenow->tm_mday, timenow->tm_mon + 1, timenow->tm_year + 1900);
                             fprintf(fp, "%ld %s %d\n", randTimestamp, sensorTypes[j], gerar_num());
                         }
                     }
+                    system("cls");
+                    if (fp != NULL) {
+                        printf("Arquivo Criado com sucesso\n\n");
+                    }
                     fclose(fp);
                     break;
                 case 2:
+                    system("cls");
                     ordernar(fname);
                     break;
                 case 3:
+                    system("cls");
                     separarPorSensores(fname);
                     break;
                 case 4:
+                    fp = fopen(fname, "r");
+                    if (fp == NULL) {
+                        system("cls");
+                        printf("Arquivo principal nao foi inicializado\n");
+                        fclose(fp);
+                        break;
+                    }
+                    fclose(fp);
+                    printf("Escolha um sensor: \n");
+                    for (int l = 0; l < sizeof(sensorTypes) / sizeof(sensorTypes[0]); l++) {
+                        printf("%i- %s\n", l + 1, sensorTypes[l]);
+                    }
+                    
+                    scanf("%d", &sensorOpt);
+                    buscarRegistroExato(sensorTypes[sensorOpt - 1], capturar_timestamp_valido());
                     
                     break;
                 default:
-                    printf("Opção inválida. Tente novamente.\n");
+                    printf("Opcao invalida. Tente novamente.\n");
             }
-        } while (opt != 4);
+        } while (opt != 5);
+        system("cls");
 return 0;
 }

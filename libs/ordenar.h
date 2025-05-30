@@ -1,3 +1,6 @@
+#ifndef ORDENAR_H 
+#define ORDENAR_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +13,10 @@ typedef struct {
 
 int contarLinhas(char* fileName, int ignore) {
    FILE *fp = fopen(fileName, "r");
+   if (fp == NULL) {
+      printf("Nao ha arquivo de registros");
+       return -1;
+   }
    int contador = 0;
    char linha[256]; 
    while (fgets(linha, sizeof(linha), fp) != NULL) {
@@ -21,9 +28,9 @@ int contarLinhas(char* fileName, int ignore) {
 
 void ordernar(char *fileName) { //Funçaão de ordenar os registros
 
-   Registro registros[contarLinhas(fileName, 1)]; //criando um vetor de registros do tamanho tamanho do arquivo ignorndo o cabeçalho
+   Registro registros[contarLinhas(fileName, 2)]; //criando um vetor de registros do tamanho tamanho do arquivo ignorndo o cabeçalho
 
-   FILE *fp = fopen(fileName, "r+"); //Abrindo arquivo
+   FILE *fp = fopen(fileName, "r"); //Abrindo arquivo
    if (fp == NULL) {
       printf("Erro ao abrir o arquivo");
       return;
@@ -70,6 +77,7 @@ void ordernar(char *fileName) { //Funçaão de ordenar os registros
 }
 
 void separarPorSensores(char* fileName) {
+   ordernar(fileName);
    FILE *fp, *tfp;
    Registro registros[contarLinhas(fileName, 2)];
 
@@ -81,22 +89,20 @@ void separarPorSensores(char* fileName) {
          printf("Erro ao abrir o arquivo");
          return;
       } else {
-         fgets(linha, sizeof(linha), fp);
+         fgets(linha, sizeof(linha), fp); //pulando o cabeçalho
          while (fgets(linha, sizeof(linha), fp) != NULL) {
-         if (strlen(linha) > 1) {
-            sscanf(linha, "%d %49s %d", &registros[i].timestamp, registros[i].sensor, &registros[i].valor);
+         if (strlen(linha) > 1) { //verificando se a linha esta vazua
+            sscanf(linha, "%d %49s %d", &registros[i].timestamp, registros[i].sensor, &registros[i].valor); //pegando conteudo da linha
             i++;
          }
          }
-         fclose(fp);
+         fclose(fp); //fechando arquivo principal
       }
 
-      for(i = 0; i < sizeof(registros) / sizeof(Registro); i++) {
+      for(i = 0; i < sizeof(registros) / sizeof(Registro); i++) { //mudar a forma de abertura
       snprintf(buffer, sizeof(buffer), "%s.txt", registros[i].sensor);
       tfp = fopen(buffer, "a");
-         printf("abertura de arquivo testada");
          if (tfp == NULL) {
-            printf("tentativa de de crair o arquivo");
             tfp = fopen(buffer, "w");
             if (tfp == NULL) {
                perror("Erro ao abrir arquivo");
@@ -110,6 +116,4 @@ void separarPorSensores(char* fileName) {
    fclose(fp);
 }
 
-Registro construirRegistro(fileName) {
-
-}
+#endif 
